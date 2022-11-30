@@ -14,10 +14,11 @@ function App() {
   return (
     <>
       <ShellBar primaryTitle="Shipment Execution App"></ShellBar>
-      <Routes>
+      <Main/>
+      {/* <Routes>
         <Route path="/" element={<Main/>}/>
         <Route path="detail" element={<Details/>}/>
-      </Routes>
+      </Routes> */}
     </>
   );
 }
