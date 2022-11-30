@@ -1,25 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+import { ShellBar } from "@ui5/webcomponents-react";
+import { Route, Routes } from "react-router-dom";
+import Main from "./components/Main";
+import Details from "./components/Details";
+
+import { setTheme } from '@ui5/webcomponents-base/dist/config/Theme';
+import '@ui5/webcomponents-react/dist/Assets';
 
 function App() {
+  useEffect(()=>{
+    setTheme('sap_horizon');
+  },[])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ShellBar primaryTitle="Shipment Execution App"></ShellBar>
+      <Routes>
+        <Route path="/" element={<Main/>}/>
+        <Route path="detail" element={<Details/>}/>
+      </Routes>
+    </>
   );
 }
 
