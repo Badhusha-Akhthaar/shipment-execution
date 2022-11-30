@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import "./App.css";
 import { ShellBar } from "@ui5/webcomponents-react";
 import { Route, Routes } from "react-router-dom";
 import Main from "./components/Main";
