@@ -5,7 +5,7 @@ import {formatExecutionStatus,formatExecutionIcon,formatExecutionState} from "..
 function ObjectStatusWrapper(props) {
     const {status} = props
   return (
-    <ObjectStatus icon={<Icon name={formatExecutionIcon(status)}></Icon>} state={formatExecutionState(status)}>
+    <ObjectStatus inverted icon={<Icon name={formatExecutionIcon(status)}></Icon>} state={formatExecutionState(status)}>
         {
             formatExecutionStatus(status)
         }
