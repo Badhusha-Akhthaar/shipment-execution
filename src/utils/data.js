@@ -11,7 +11,7 @@ export async function initializeData() {
 
     if(!_didFetch){
         console.log("Didn't find data, fetching....")
-        const BASE_URL = "https://salesorderrouter-dev.cfapps.us10.hana.ondemand.com/odata/"
+        const BASE_URL = "https://shipmentsrouter-v1.cfapps.eu10.hana.ondemand.com/odata/"
         const ROOT_URL = axios.get(`${BASE_URL}ZTMDRIROOT_C`);
         const STOPITEM_URL = axios.get(`${BASE_URL}ZTMDRISTIT_C`);
         const STOP_URL = axios.get(`${BASE_URL}ZTMDRISTOP_C`);
