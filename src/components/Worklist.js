@@ -2,13 +2,13 @@ import { Label,Table,TableColumn,TableGrowingMode } from "@ui5/webcomponents-rea
 import React, { useEffect, useState } from "react";
 import WorklistRow from "./WorklistRow"
 
-import { getShipmentData } from '../utils/data.js'
+import { getShipmentsData } from '../utils/data.js'
 
 function Worklist(props) {
   const [shipments, setShipments] = useState([]);
   useEffect(() => {
     console.log("Fetching data from PDB")
-    getShipmentData()
+    getShipmentsData()
         .then((data)=>{
             console.log(data)
             setShipments(data.rows)
@@ -16,7 +16,7 @@ function Worklist(props) {
         .catch((err)=>{
             console.log(err);
         });
-  }, []);
+  }, [props.isFetching]);
   return (
     <Table
       columns={

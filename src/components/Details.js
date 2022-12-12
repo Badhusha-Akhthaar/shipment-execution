@@ -1,17 +1,23 @@
-import { Avatar, AvatarColorScheme, AvatarShape, AvatarSize, ObjectPage } from '@ui5/webcomponents-react';
-import React from 'react'
+import { Avatar, AvatarColorScheme, AvatarShape, AvatarSize, List, ObjectPage, ObjectPageSection, StandardListItem } from '@ui5/webcomponents-react';
+import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import DetailHeaderContent from './DetailHeaderContent';
 import DetailHeaderTitle from './DetailHeaderTitle';
 
 import "@ui5/webcomponents-icons/dist/AllIcons.js"
 
-import truck from "../truck.png"
+import {getShipmentData} from "../utils/data.js"
 
 function Details() {
   const { shipmentid } = useParams();
   const shipmentData = useLocation();
+  const [stops,setStops] = useState();
+  useEffect(()=>{
+    getShipmentData(shipmentid)
+      .then((data)=>{setStops(data)});
+  },[shipmentid])
   console.log(shipmentData);
+  console.log(shipmentid);
   return (
     <>
     <ObjectPage        
@@ -27,7 +33,12 @@ function Details() {
             style={{
               height: '700px'
             }}
-          >  
+          >
+            <ObjectPageSection titleText='Stops' id='stops'>
+              <List>
+                
+              </List>
+            </ObjectPageSection>
       </ObjectPage>
     </>
   )

@@ -31,7 +31,7 @@ function Main() {
         hidden={isFetching || hasError}
         headerContent={<DynamicPageHeader><CustomFilterBar/></DynamicPageHeader>}
         headerTitle={<DynamicPageTitle header={<Label>Shipments</Label>}/>}>
-                <Worklist/>
+                <Worklist isFetching={isFetching}/>
     </DynamicPage>
     </>
     

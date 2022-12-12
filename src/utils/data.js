@@ -79,13 +79,24 @@ function writeToIndexedDB(data,entityName){
     });
 }
 
-export async function getShipmentData(){
-    let _shipmentData = new PouchDB('ROOT');
-    return _shipmentData.allDocs({include_docs: true})
+export async function getShipmentsData(){
+    let _shipmentsData = new PouchDB('ROOT');
+    return _shipmentsData.allDocs({include_docs: true})
                 .then((data)=>{
                     return data;
                 })
                 .catch((err)=>{
                     console.log("PouchDB Read Error")
                 });
+}
+
+export async function getShipmentData(shipmentid){
+    let _stopsDB = new PouchDB('STOP');
+    return _stopsDB.get(shipmentid)
+                    .then((data)=>{
+                        console.log(data)
+                    })
+                    .catch((err)=>{
+                        console.log("PouchDB Read Error"+err)
+                    })
 }
