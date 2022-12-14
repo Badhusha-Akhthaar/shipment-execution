@@ -10,7 +10,6 @@ function WorklistRow(props) {
   const navigate = useNavigate()
   const { data } = props;
   function handleRowClick(rowInfo){
-    console.log(rowInfo);
     navigate(`/detail/${rowInfo.tor_id}`,{ state: rowInfo });
   }
   return (

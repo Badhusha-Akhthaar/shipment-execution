@@ -8,14 +8,9 @@ function Worklist(props) {
   const [shipments, setShipments] = useState([]);
   useEffect(() => {
     console.log("Fetching data from PDB")
-    getShipmentsData()
-        .then((data)=>{
-            console.log(data)
-            setShipments(data.rows)
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
+    getShipmentsData().then((data)=>{
+      setShipments(data);
+    })
   }, [props.isFetching]);
   return (
     <Table
@@ -48,7 +43,7 @@ function Worklist(props) {
       growing={TableGrowingMode.Scroll}>
         {
             shipments.map((shipment)=>{
-                return <WorklistRow data={shipment.doc}/>
+                return <WorklistRow data={shipment}/>
             })
         }
       </Table>

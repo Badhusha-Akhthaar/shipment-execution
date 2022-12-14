@@ -1,11 +1,12 @@
 import axios from "axios";
-import PouchDB from 'pouchdb-browser';
+import db from '../utils/db.js';
 
 
 export async function initializeData() {
-    let _configDB = new PouchDB("_config");
-    let _didFetch = await _configDB.get("fetchConfig").then((data)=>{
-                                return data;
+    let _configDB = db.config;
+    let _didFetch;
+    await _configDB.get(1).then((data)=>{
+                                _didFetch =  data;
                             })
                             .catch((err)=> console.log(err));
 
@@ -13,27 +14,22 @@ export async function initializeData() {
         console.log("Didn't find data, fetching....")
         const BASE_URL = "https://shipmentsrouter-v1.cfapps.eu10.hana.ondemand.com/odata/"
         const ROOT_URL = axios.get(`${BASE_URL}ZTMDRIROOT_C`);
-        const STOPITEM_URL = axios.get(`${BASE_URL}ZTMDRISTIT_C`);
+        // const STOPITEM_URL = axios.get(`${BASE_URL}ZTMDRISTIT_C`);
         const STOP_URL = axios.get(`${BASE_URL}ZTMDRISTOP_C`);
-        const ITEM_URL = axios.get(`${BASE_URL}ZTMDRIITEM_C`);
-        const ENTITY_URLS  = [ROOT_URL,STOPITEM_URL,STOP_URL,ITEM_URL];
+        // const ITEM_URL = axios.get(`${BASE_URL}ZTMDRIITEM_C`);
+        const ENTITY_URLS  = [ROOT_URL,STOP_URL];
         let fetchStart = Date.now();
         console.log(`Fetch Start ${fetchStart}`)
         return await axios
                     .all(ENTITY_URLS)
                     .then(axios.spread((...responses)=>{
-                        let ENTITY_NAMES = ["ROOT","STOPITEM","STOP","ITEM"];
+                        let ENTITY_NAMES = ["ROOT","STOP"];
                         let _saveToIndexedDB = [];
                         responses.forEach((response,i)=>{
-                            response.data.d.results.forEach(e => {
-                                e._id = e.tor_id;
-                                delete e.__metadata
-                                return e
-                            })
-                            _saveToIndexedDB.push(writeToIndexedDB(response.data.d.results,ENTITY_NAMES[i]));
+                            _saveToIndexedDB.push(writeToDexieDB(response.data.d.results,ENTITY_NAMES[i]));
                         });
                         return Promise.all(_saveToIndexedDB).then(()=>{
-                                    _configDB.put({"_id":"fetchConfig","didFetch":true});
+                                    db.config.put({didFetch: true},[1]);
                                     return new Promise((resolve,reject)=>{
                                         resolve(true);
                                     });
@@ -66,37 +62,54 @@ export async function initializeData() {
     }
 }
 
-function writeToIndexedDB(data,entityName){
-    let _appData = new PouchDB(entityName);
-    console.log(data);
-    return new Promise((resolve,reject)=>{
-        _appData.bulkDocs(data).then(()=>{
-            resolve();
-        })
-        .catch((err)=>{
-            reject(err);
-        })
-    });
+// function writeToIndexedDB(data,entityName){
+//     console.log(data);
+//     return new Promise((resolve,reject)=>{
+//         _appData.bulkDocs(data).then(()=>{
+//             resolve();
+//         })
+//         .catch((err)=>{
+//             reject(err);
+//         })
+//     });
+// }
+
+function writeToDexieDB(data,entityName){
+    switch (entityName) {
+        case 'ROOT':
+            return new Promise((resolve,reject)=>{
+                db.root.bulkAdd(data).then(()=>{
+                    resolve();
+                })
+                .catch((err)=>{
+                    reject(err);
+                })
+            });
+        case 'STOP':
+            return new Promise((resolve,reject)=>{
+                db.stop.bulkAdd(data).then(()=>{
+                    resolve();
+                })
+                .catch((err)=>{
+                    reject(err);
+                })
+            });
+        default:
+            break;
+    }
 }
 
 export async function getShipmentsData(){
-    let _shipmentsData = new PouchDB('ROOT');
-    return _shipmentsData.allDocs({include_docs: true})
-                .then((data)=>{
-                    return data;
-                })
-                .catch((err)=>{
-                    console.log("PouchDB Read Error")
-                });
+    return await db.root.toArray();
 }
 
 export async function getShipmentData(shipmentid){
-    let _stopsDB = new PouchDB('STOP');
-    return _stopsDB.get(shipmentid)
-                    .then((data)=>{
-                        console.log(data)
-                    })
-                    .catch((err)=>{
-                        console.log("PouchDB Read Error"+err)
-                    })
+
+    let shipmentHeader = await db.root.where({tor_id : shipmentid}).toArray().then((d)=>{return d});
+    let shipmentStops = await db.stop.where({tor_id : shipmentid}).toArray().then((d)=>{return d});
+    return {shipmentHeader,shipmentStops};
+}
+
+export async function getStopsData(shipmentid){
+    return await db.stop.where({tor_id : shipmentid}).toArray();
 }
